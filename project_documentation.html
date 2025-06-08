@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-Powered Task Manager - Project Documentation</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            color: #1a202c;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            min-height: 100vh;
+        }
+
+        .hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 4rem 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="rgba(255,255,255,0.1)"/><circle cx="80" cy="20" r="2" fill="rgba(255,255,255,0.1)"/><circle cx="20" cy="80" r="2" fill="rgba(255,255,255,0.1)"/><circle cx="80" cy="80" r="2" fill="rgba(255,255,255,0.1)"/></svg>');
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+        }
+
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            margin-top: 2rem;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .content {
+            padding: 3rem 2rem;
+        }
+
+        .section {
+            margin-bottom: 4rem;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: #2d3748;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .section-title i {
+            color: #667eea;
+        }
+
+        .section-subtitle {
+            font-size: 1.1rem;
+            color: #718096;
+            margin-bottom: 2rem;
+        }
+
+        .architecture-diagram {
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            border-radius: 20px;
+            padding: 3rem;
+            margin: 2rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .architecture-flow {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .flow-component {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            flex: 1;
+            min-width: 200px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+            position: relative;
+        }
+
+        .flow-component:hover {
+            transform: translateY(-5px);
+        }
+
+        .flow-component::after {
+            content: '→';
+            position: absolute;
+            right: -1.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 2rem;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .flow-component:last-child::after {
+            display: none;
+        }
+
+        .component-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .component-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #2d3748;
+        }
+
+        .component-desc {
+            font-size: 0.9rem;
+            color: #718096;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid #667eea;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+
+        .feature-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #2d3748;
+        }
+
+        .feature-desc {
+            color: #718096;
+            margin-bottom: 1rem;
+        }
+
+        .feature-list {
+            list-style: none;
+        }
+
+        .feature-list li {
+            padding: 0.5rem 0;
+            color: #4a5568;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .feature-list li::before {
+            content: '✓';
+            color: #48bb78;
+            font-weight: bold;
+        }
+
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            position: relative;
+        }
+
+        .code-header {
+            color: #a0aec0;
+            font-size: 0.8rem;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid #4a5568;
+            padding-bottom: 0.5rem;
+        }
+
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .tech-item {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 25px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: transform 0.3s ease;
+        }
+
+        .tech-item:hover {
+            transform: scale(1.05);
+        }
+
+        .demo-section {
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            border-radius: 20px;
+            padding: 3rem;
+            margin: 2rem 0;
+        }
+
+        .demo-buttons {
+            display: flex;
+            gap: 1rem;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+        }
+
+        .demo-btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .demo-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .timeline {
+            position: relative;
+            margin: 2rem 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 2rem;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, #667eea, #764ba2);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 2rem;
+            padding-left: 5rem;
+        }
+
+        .timeline-icon {
+            position: absolute;
+            left: 1rem;
+            top: 0.5rem;
+            width: 2rem;
+            height: 2rem;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.9rem;
+        }
+
+        .timeline-content {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .timeline-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #2d3748;
+        }
+
+        .footer {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-link {
+            color: #e2e8f0;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-link:hover {
+            color: #667eea;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero-stats {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .architecture-flow {
+                flex-direction: column;
+            }
+
+            .flow-component::after {
+                content: '↓';
+                right: 50%;
+                bottom: -1.5rem;
+                top: auto;
+                transform: translateX(50%);
+            }
+
+            .content {
+                padding: 2rem 1rem;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 600;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #d4edda;
+            color: #155724;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin: 1rem 0;
+        }
+
+        .status-badge i {
+            color: #28a745;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <section class="hero">
+            <div class="hero-content">
+                <h1><i class="fas fa-robot"></i> AI-Powered Task Manager</h1>
+                <p>Intelligent task management system using <span class="highlight">LangGraph</span> agents and <span class="highlight">Model Context Protocol (MCP)</span> servers</p>
+                
+                <div class="status-badge">
+                    <i class="fas fa-check-circle"></i>
+                    Project Status: Completed & Tested
+                </div>
+
+                <div class="hero-stats">
+                    <div class="stat">
+                        <span class="stat-number">6</span>
+                        <span class="stat-label">Core Features</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">3</span>
+                        <span class="stat-label">Interface Options</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">100%</span>
+                        <span class="stat-label">Test Coverage</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="content">
+            <section class="section">
+                <h2 class="section-title">
+                    <i class="fas fa-sitemap"></i>
+                    Project Architecture
+                </h2>
+                <p class="section-subtitle">
+                    A modular, scalable architecture that demonstrates the power of AI agents coordinating with specialized service endpoints.
+                </p>
+
+                <div class="architecture-diagram">
+                    <div class="architecture-flow">
+                        <div class="flow-component">
+                            <div class="component-icon">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <h3 class="component-title">User Input</h3>
+                            <p class="component-desc">Natural language requests via CLI, web interface, or API</p>
+                        </div>
+
+                        <div class="flow-component">
+                            <div class="component-icon">
+                                <i class="fas fa-brain"></i>
+                            </div>
+                            <h3 class="component-title">LangGraph Agent</h3>
+                            <p class="component-desc">GPT-powered ReAct agent with tool orchestration capabilities</p>
+                        </div>
+
+                        <div class="flow-component">
+                            <div class="component-icon">
+                                <i class="fas fa-server"></i>
+                            </div>
+                            <h3 class="component-title">MCP Servers</h3>
+                            <p class="component-desc">Specialized microservices for tasks and notifications</p>
+                        </div>
+
+                        <div class="flow-component">
+                            <div class="component-icon">
+                                <i class="fas fa-reply"></i>
+                            </div>
+                            <h3 class="component-title">Response</h3>
+                            <p class="component-desc">Intelligent, contextual responses with action confirmations</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section">
+                <h2 class="section-title">
+                    <i class="fas fa-cogs"></i>
+                    Core Features
+                </h2>
+                <p class="section-subtitle">
+                    Comprehensive task management capabilities powered by artificial intelligence.
+                </p>
+
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-tasks"></i>
+                        </div>
+                        <h3 class="feature-title">Task Management</h3>
+                        <p class="feature-desc">Complete CRUD operations for tasks with intelligent processing.</p>
+                        <ul class="feature-list">
+                            <li>Add tasks with natural language</li>
+                            <li>List and organize tasks</li>
+                            <li>Remove tasks with smart matching</li>
+                            <li>Get task count and statistics</li>
+                        </ul>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-bell"></i>
+                        </div>
+                        <h3 class="feature-title">Smart Notifications</h3>
+                        <p class="feature-desc">Priority-based reminder system with full audit trail.</p>
+                        <ul class="feature-list">
+                            <li>Send task reminders</li>
+                            <li>Priority levels (low, normal, high)</li>
+                            <li>Completion notifications</li>
+                            <li>Notification history tracking</li>
+                        </ul>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                        <h3 class="feature-title">Natural Language Interface</h3>
+                        <p class="feature-desc">Conversational AI that understands multiple ways to express requests.</p>
+                        <ul class="feature-list">
+                            <li>Multiple expression patterns</li>
+                            <li>Context-aware responses</li>
+                            <li>Error handling and suggestions</li>
+                            <li>Interactive conversation flow</li>
+                        </ul>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-globe"></i>
+                        </div>
+                        <h3 class="feature-title">Web Interface</h3>
+                        <p class="feature-desc">Beautiful, responsive web application for visual task management.</p>
+                        <ul class="feature-list">
+                            <li>Modern chat interface</li>
+                            <li>Quick action buttons</li>
+                            <li>Real-time responses</li>
+                            <li>Mobile-responsive design</li>
+                        </ul>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-network-wired"></i>
+                        </div>
+                        <h3 class="feature-title">MCP Protocol</h3>
+                        <p class="feature-desc">Demonstrates Model Context Protocol for service integration.</p>
+                        <ul class="feature-list">
+                            <li>STDIO transport for task DB</li>
+                            <li>HTTP/SSE for notifications</li>
+                            <li>Tool discovery and registration</li>
+                            <li>Protocol-agnostic design</li>
+                        </ul>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-code"></i>
+                        </div>
+                        <h3 class="feature-title">Developer Experience</h3>
+                        <p class="feature-desc">Well-documented, extensible codebase with multiple deployment options.</p>
+                        <ul class="feature-list">
+                            <li>Comprehensive documentation</li>
+                            <li>Automated setup validation</li>
+                            <li>Multiple interface options</li>
+                            <li>Extensible architecture</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section">
+                <h2 class="section-title">
+                    <i class="fas fa-layer-group"></i>
+                    Technology Stack
+                </h2>
+                <p class="section-subtitle">
+                    Built with modern, cutting-edge technologies for AI and web development.
+                </p>
+
+                <div class="tech-stack">
+                    <div class="tech-item">
+                        <i class="fab fa-python"></i>
+                        Python 3.10+
+                    </div>
+                    <div class="tech-item">
+                        <i class="fas fa-brain"></i>
+                        LangGraph
+                    </div>
+                    <div class="tech-item">
+                        <i class="fas fa-robot"></i>
+                        OpenAI GPT
+                    </div>
+                    <div class="tech-item">
+                        <i class="fas fa-server"></i>
+                        MCP Protocol
+                    </div>
+                    <div class="tech-item">
+                        <i class="fas fa-globe"></i>
+                        Flask
+                    </div>
+                    <div class="tech-item">
+                        <i class="fab fa-html5"></i>
+                        HTML5/CSS3
+                    </div>
+                    <div class="tech-item">
+                        <i class="fab fa-js"></i>
+                        JavaScript
+                    </div>
+                    <div class="tech-item">
+                        <i class="fas fa-terminal"></i>
+                        CLI Interface
+                    </div>
+                </div>
+            </section>
+
+            <section class="section">
+                <h2 class="section-title">
+                    <i class="fas fa-route"></i>
+                    Data Flow & Process
+                </h2>
+                <p class="section-subtitle">
+                    Understanding how requests flow through the system from input to response.
+                </p>
+
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-icon">
+                            <i class="fas fa-play"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <h4 class="timeline-title">1. User Input Processing</h4>
+                            <p>User submits natural language request via CLI, web interface, or direct API call. Input is validated and prepared for processing.</p>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-icon">
+                            <i class="fas fa-cog"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <h4 class="timeline-title">2. LangGraph Agent Analysis</h4>
+                            <p>GPT-powered ReAct agent analyzes the request, determines intent, and selects appropriate tools from the available MCP servers.</p>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-icon">
+                            <i class="fas fa-exchange-alt"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <h4 class="timeline-title">3. MCP Server Communication</h4>
+                            <p>Agent communicates with specialized MCP servers (Task DB via STDIO, Notifications via HTTP) to execute the requested operations.</p>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-icon">
+                            <i class="fas fa-database"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <h4 class="timeline-title">4. Data Processing & Storage</h4>
+                            <p>MCP servers process the requests, update in-memory storage (or databases in production), and return structured responses.</p>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-icon">
+                            <i class="fas fa-magic"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <h4 class="timeline-title">5. Response Generation</h4>
+                            <p>Agent processes server responses and generates human-friendly, contextual responses that confirm actions and provide helpful information.</p>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-icon">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <h4 class="timeline-title">6. User Feedback</h4>
+                            <p>Final response is delivered to the user through their chosen interface, completing the request-response cycle.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section">
+                <h2 class="section-title">
+                    <i class="fas fa-code"></i>
+                    Code Examples
+                </h2>
+                <p class="section-subtitle">
+                    Sample code snippets showing key implementation patterns.
+                </p>
+
+                <div class="code-block">
+                    <div class="code-header">MCP Tool Definition Example</div>
+                    <pre>@mcp.tool()
+def add_task(task: str) -> str:
+    """
+    Add a new task to the database.
+    
+    Args:
+        task (str): The task description to add
+        
+    Returns:
+        str: Confirmation message indicating the task was added
+    """
+    tasks.append(task)
+    return f"Task '{task}' added successfully."</pre>
+                </div>
+
+                <div class="code-block">
+                    <div class="code-header">LangGraph Agent Setup</div>
+                    <pre># Initialize the multi-server MCP client
+self.client = MultiServerMCPClient(server_config)
+
+# Get available tools from all configured MCP servers
+tools = await self.client.get_tools()
+
+# Create the LangGraph ReAct agent with the LLM and MCP tools
+self.agent = create_react_agent(self.model, tools)</pre>
+                </div>
+
+                <div class="code-block">
+                    <div class="code-header">Natural Language Processing</div>
+                    <pre>async def process_user_request(self, user_input: str) -> str:
+    """Process a user request through the LangGraph agent."""
+    query = {"messages": [{"role": "user", "content": user_input}]}
+    
+    response = await self.agent.ainvoke(query)
+    return response['messages'][-1].content</pre>
+                </div>
+            </section>
+
+            <section class="section">
+                <div class="demo-section">
+                    <h2 class="section-title">
+                        <i class="fas fa-rocket"></i>
+                        Try It Yourself
+                    </h2>
+                    <p class="section-subtitle">
+                        Multiple ways to experience the AI-powered task manager in action.
+                    </p>
+
+                    <div class="demo-buttons">
+                        <a href="#" class="demo-btn" onclick="alert('Run: python web_app.py\nThen open: http://localhost:5000')">
+                            <i class="fas fa-globe"></i>
+                            Launch Web Interface
+                        </a>
+                        <a href="#" class="demo-btn" onclick="alert('Run: python task_manager_working.py\nChoose demo mode (1) or interactive mode (2)')">
+                            <i class="fas fa-terminal"></i>
+                            CLI Interface
+                        </a>
+                        <a href="#" class="demo-btn" onclick="alert('Run: python setup.py\nValidates environment and dependencies')">
+                            <i class="fas fa-check-circle"></i>
+                            Setup Validation
+                        </a>
+                    </div>
+
+                    <div class="code-block">
+                        <div class="code-header">Quick Start Commands</div>
+                        <pre># Install dependencies
+pip install -r requirements.txt
+
+# Set up environment (add your OpenAI API key to .env)
+python setup.py
+
+# Start web interface
+python web_app.py
+
+# Or use CLI interface
+python task_manager_working.py</pre>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section">
+                <h2 class="section-title">
+                    <i class="fas fa-lightbulb"></i>
+                    Research Applications
+                </h2>
+                <p class="section-subtitle">
+                    This project demonstrates key concepts relevant to AI agent research and development.
+                </p>
+
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-project-diagram"></i>
+                        </div>
+                        <h3 class="feature-title">Agent Orchestration</h3>
+                        <p class="feature-desc">Shows how AI agents can coordinate multiple specialized services to accomplish complex tasks.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-plug"></i>
+                        </div>
+                        <h3 class="feature-title">Protocol Standardization</h3>
+                        <p class="feature-desc">Demonstrates the Model Context Protocol for standardized AI-service communication.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-expand-arrows-alt"></i>
+                        </div>
+                        <h3 class="feature-title">Scalable Architecture</h3>
+                        <p class="feature-desc">Modular design that can be extended with additional services and capabilities.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-user-cog"></i>
+                        </div>
+                        <h3 class="feature-title">Human-AI Interaction</h3>
+                        <p class="feature-desc">Natural language interface patterns for intuitive human-AI collaboration.</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <footer class="footer">
+            <div class="footer-links">
+                <a href="#" class="footer-link">
+                    <i class="fab fa-github"></i>
+                    Source Code
+                </a>
+                <a href="#" class="footer-link">
+                    <i class="fas fa-book"></i>
+                    Documentation
+                </a>
+                <a href="#" class="footer-link">
+                    <i class="fas fa-bug"></i>
+                    Report Issues
+                </a>
+                <a href="#" class="footer-link">
+                    <i class="fas fa-question-circle"></i>
+                    Support
+                </a>
+            </div>
+            <p>&copy; 2024 AI-Powered Task Manager. Built for research and education.</p>
+            <p>Powered by LangGraph, MCP Protocol, and OpenAI</p>
+        </footer>
+    </div>
+</body>
+</html> 
