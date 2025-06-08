@@ -1,16 +1,14 @@
-# AI-Powered Task Manager with LangGraph and MCP
-# Core MCP and LangGraph dependencies
-langchain-mcp-adapters>=0.1.0
+# AI-Powered Task Manager with LangGraph and simplified MCP
+# Core LangGraph and AI dependencies
 langgraph>=0.2.0
 langchain-openai>=0.2.0
-mcp>=1.0.0
+langchain>=0.3.0
 
 # Environment and utility dependencies
 python-dotenv>=1.0.0
 
-# HTTP server dependencies for notification server
-uvicorn>=0.24.0
-fastapi>=0.104.0
+# HTTP client for communication
+aiohttp>=3.9.0
 
 # Web app dependencies
 flask>=2.3.0 

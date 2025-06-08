@@ -29,7 +29,8 @@
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
             width: 100%;
             max-width: 900px;
-            height: 80vh;
+            height: 85vh;
+            max-height: 800px;
             display: flex;
             flex-direction: column;
             overflow: hidden;
@@ -101,6 +102,8 @@
             flex-direction: column;
             padding: 25px;
             gap: 20px;
+            min-height: 0;
+            overflow: hidden;
         }
 
         .quick-actions {
@@ -137,13 +140,18 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            min-height: 0;
+            height: 100%;
         }
 
         .chat-messages {
             flex: 1;
             padding: 20px;
             overflow-y: auto;
+            overflow-x: hidden;
             scroll-behavior: smooth;
+            min-height: 0;
+            height: 0;
         }
 
         .message {
@@ -221,6 +229,7 @@
             padding: 20px;
             background: white;
             border-top: 1px solid #e2e8f0;
+            flex-shrink: 0;
         }
 
         .chat-input-form {
@@ -342,7 +351,13 @@
         @media (max-width: 768px) {
             .container {
                 height: 95vh;
+                max-height: 95vh;
                 margin: 10px;
+            }
+
+            .main-content {
+                padding: 15px;
+                gap: 15px;
             }
 
             .quick-actions {
@@ -356,6 +371,10 @@
 
             .message-content {
                 max-width: 90%;
+            }
+
+            .chat-input-container {
+                padding: 15px;
             }
         }
     </style>

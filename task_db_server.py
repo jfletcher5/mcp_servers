@@ -1,69 +1,126 @@
 """
-Task Database MCP Server
-Handles task storage operations including listing and adding tasks.
-Uses FastMCP to expose tools via MCP protocol.
+Simplified Task Database MCP Server
+Handles task storage operations with direct JSON-RPC over STDIO.
+More reliable than FastMCP for web application integration.
 """
 
-from mcp.server.fastmcp import FastMCP
+import json
+import sys
+import threading
+from typing import List, Dict, Any
 
-# Initialize MCP server for task database operations
-mcp = FastMCP("TaskDB")
-
-# Mock task storage - in production this would be a real database
-tasks = []
-
-@mcp.tool()
-def list_tasks() -> list:
-    """
-    List all tasks currently stored in the database.
+class TaskDatabaseServer:
+    """Simple task database server with JSON-RPC over STDIO."""
     
-    Returns:
-        list: A list of all task strings
-    """
-    return tasks
-
-@mcp.tool()
-def add_task(task: str) -> str:
-    """
-    Add a new task to the database.
-    
-    Args:
-        task (str): The task description to add
+    def __init__(self):
+        # Mock task storage - in production this would be a real database
+        self.tasks = []
         
-    Returns:
-        str: Confirmation message indicating the task was added
-    """
-    tasks.append(task)
-    return f"Task '{task}' added successfully."
-
-@mcp.tool()
-def remove_task(task: str) -> str:
-    """
-    Remove a task from the database if it exists.
+    def handle_request(self, request: Dict[str, Any]) -> Dict[str, Any]:
+        """Handle incoming JSON-RPC requests."""
+        try:
+            method = request.get("method")
+            params = request.get("params", {})
+            request_id = request.get("id", 1)
+            
+            # Route to appropriate method
+            if method == "tools/call":
+                tool_name = params.get("name")
+                tool_args = params.get("arguments", {})
+                
+                # Call the appropriate tool
+                if tool_name == "list_tasks":
+                    result = self.list_tasks()
+                elif tool_name == "add_task":
+                    result = self.add_task(tool_args.get("task", ""))
+                elif tool_name == "remove_task":
+                    result = self.remove_task(tool_args.get("task", ""))
+                elif tool_name == "get_task_count":
+                    result = self.get_task_count()
+                else:
+                    return {
+                        "jsonrpc": "2.0",
+                        "id": request_id,
+                        "error": {"code": -32601, "message": f"Method not found: {tool_name}"}
+                    }
+                
+                return {
+                    "jsonrpc": "2.0",
+                    "id": request_id,
+                    "result": {
+                        "content": [{"type": "text", "text": str(result)}]
+                    }
+                }
+            else:
+                return {
+                    "jsonrpc": "2.0", 
+                    "id": request_id,
+                    "error": {"code": -32601, "message": f"Method not found: {method}"}
+                }
+                
+        except Exception as e:
+            return {
+                "jsonrpc": "2.0",
+                "id": request.get("id", 1),
+                "error": {"code": -32603, "message": f"Internal error: {str(e)}"}
+            }
     
-    Args:
-        task (str): The task description to remove
-        
-    Returns:
-        str: Confirmation message indicating success or failure
-    """
-    if task in tasks:
-        tasks.remove(task)
-        return f"Task '{task}' removed successfully."
-    else:
-        return f"Task '{task}' not found in the database."
-
-@mcp.tool()
-def get_task_count() -> int:
-    """
-    Get the total number of tasks in the database.
+    def list_tasks(self) -> List[str]:
+        """List all tasks currently stored in the database."""
+        return self.tasks
     
-    Returns:
-        int: The number of tasks currently stored
-    """
-    return len(tasks)
+    def add_task(self, task: str) -> str:
+        """Add a new task to the database."""
+        if task and task.strip():
+            self.tasks.append(task.strip())
+            return f"Task '{task}' added successfully."
+        return "Cannot add empty task."
+    
+    def remove_task(self, task: str) -> str:
+        """Remove a task from the database if it exists."""
+        if task in self.tasks:
+            self.tasks.remove(task)
+            return f"Task '{task}' removed successfully."
+        else:
+            return f"Task '{task}' not found in the database."
+    
+    def get_task_count(self) -> int:
+        """Get the total number of tasks in the database."""
+        return len(self.tasks)
+    
+    def run(self):
+        """Run the server, listening for JSON-RPC requests on STDIN."""
+        try:
+            while True:
+                # Read line from stdin
+                line = sys.stdin.readline()
+                if not line:
+                    break
+                    
+                try:
+                    # Parse JSON request
+                    request = json.loads(line.strip())
+                    
+                    # Handle request
+                    response = self.handle_request(request)
+                    
+                    # Send response to stdout
+                    print(json.dumps(response), flush=True)
+                    
+                except json.JSONDecodeError:
+                    # Invalid JSON
+                    error_response = {
+                        "jsonrpc": "2.0",
+                        "id": None,
+                        "error": {"code": -32700, "message": "Parse error"}
+                    }
+                    print(json.dumps(error_response), flush=True)
+                    
+        except (EOFError, KeyboardInterrupt):
+            # Clean shutdown
+            pass
 
 if __name__ == "__main__":
-    # Run the MCP server using stdio transport
-    # This allows the server to communicate via standard input/output
-    mcp.run(transport="stdio") 
+    # Create and run the task database server
+    server = TaskDatabaseServer()
+    server.run() 
